@@ -11,13 +11,15 @@
 \n  yyline++;//contador de linhas
 [ \t\n]+    //não faz nada quando encontra espaço
 
-    //operadores algébricos
-"+"     sprintf(output, "line: %d token: ALGOP value: +\n", yyline); write;
-"-"     sprintf(output, "line: %d token: ALGOP value: -\n", yyline); write;
-"*"     sprintf(output, "line: %d token: ALGOP value: *\n", yyline); write;
-"/"     sprintf(output, "line: %d token: ALGOP value: /\n", yyline); write;
-"||"    sprintf(output, "line: %d token: ALGOP value: OR\n", yyline); write;
-"&&"    sprintf(output, "line: %d token: ALGOP value: AND\n", yyline); write;
+    //operadores de adição
+"+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); write;
+"-"     sprintf(output, "line: %d token: ADDOP value: -\n", yyline); write;
+"||"    sprintf(output, "line: %d token: ADDOP value: OR\n", yyline); write;
+
+    //operadores de multiplicação
+"*"     sprintf(output, "line: %d token: MULOP value: *\n", yyline); write;
+"/"     sprintf(output, "line: %d token: MULOP value: /\n", yyline); write;
+"&&"    sprintf(output, "line: %d token: MULOP value: AND\n", yyline); write;
 
 %%
 
