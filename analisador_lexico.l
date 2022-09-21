@@ -8,43 +8,43 @@
 
 %%
 
-\n  yyline++;//contador de linhas
-[ \t\n]+    //não faz nada quando encontra espaço
+\n  yyline++;/*contador de linhas*/
+[ \t\n]+    /*não faz nada quando encontra espaço*/
 
-    //operadores de adição
+        /*operadores de adição*/
 "+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); write;
 "-"     sprintf(output, "line: %d token: ADDOP value: -\n", yyline); write;
 "||"    sprintf(output, "line: %d token: ADDOP value: OR\n", yyline); write;
 
-    //operadores de multiplicação
+        /*operadores de multiplicação*/
 "*"     sprintf(output, "line: %d token: MULOP value: *\n", yyline); write;
 "/"     sprintf(output, "line: %d token: MULOP value: /\n", yyline); write;
 "&&"    sprintf(output, "line: %d token: MULOP value: AND\n", yyline); write;
 
-    //Subistituir por um título genérico
-"!"    sprintf(output, "line: %d token: Exclamation point \n", yyline); write;
-";"    sprintf(output, "line: %d token: Semicolon \n", yyline); write;
-"="    sprintf(output, "line: %d token: Equal sign \n", yyline); write;
-":"    sprintf(output, "line: %d token: Colon \n", yyline); write;
-","    sprintf(output, "line: %d token: Coma \n", yyline); write;
-"{"    sprintf(output, "line: %d token: Left brace \n", yyline); write;
-"}"    sprintf(output, "line: %d token: Right brace n", yyline); write;
-"["    sprintf(output, "line: %d token: Left bracket n", yyline); write;
-"]"    sprintf(output, "line: %d token: Right bracket \n", yyline); write;
-"("    sprintf(output, "line: %d token: Left parenthesis \n", yyline); write;
-")"    sprintf(output, "line: %d token: Right parenthesis \n", yyline); write;
+        /*Subistituir por um título genérico*/
+"!"    sprintf(output, "line: %d token: NOT\n", yyline); write;
+";"    sprintf(output, "line: %d token: SEMICOLON\n", yyline); write;
+"="    sprintf(output, "line: %d token: ASSIGN\n", yyline); write;
+":"    sprintf(output, "line: %d token: COLON\n", yyline); write;
+","    sprintf(output, "line: %d token: COMMA\n", yyline); write;
+"{"    sprintf(output, "line: %d token: LCB\n", yyline); write;
+"}"    sprintf(output, "line: %d token: RCB\n", yyline); write;
+"["    sprintf(output, "line: %d token: LB\n", yyline); write;
+"]"    sprintf(output, "line: %d token: RB\n", yyline); write;
+"("    sprintf(output, "line: %d token: LP\n", yyline); write;
+")"    sprintf(output, "line: %d token: RP\n", yyline); write;
 
-    // Adicionar constantes e ID #5 
-[0-9][0-9]*     sprintf(output, "line: %d token: CONST \n", yyline); write;
-[a-zA-Z][a-zA-Z0-9]*    sprintf(output, "line: %d token: ID \n", yyline); write;
+        /*Adicionar constantes e ID*/
+[0-9][0-9]*     sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); write;
+[a-zA-Z][a-zA-Z0-9]*    sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); write;
 
-    // Adicionar operadores relacionais #1 
-"=="    sprintf(output, "line: %d token: RELOP EQ\n", yyline); write;
-"!="    sprintf(output, "line: %d token: RELOP DIF\n", yyline); write;
-"<"     sprintf(output, "line: %d token: RELOP LT\n", yyline); write;
-">"     sprintf(output, "line: %d token: RELOP GT\n", yyline); write;
-"<="    sprintf(output, "line: %d token: RELOP LEQ\n", yyline); write;
-">="    sprintf(output, "line: %d token: RELOP GEQ\n", yyline); write;
+        /*Adicionar operadores relacionais*/ 
+"=="    sprintf(output, "line: %d token: RELOP value: EQ\n", yyline); write;
+"!="    sprintf(output, "line: %d token: RELOP value: NEQ\n", yyline); write;
+"<"     sprintf(output, "line: %d token: RELOP value: LT\n", yyline); write;
+">"     sprintf(output, "line: %d token: RELOP value: GT\n", yyline); write;
+"<="    sprintf(output, "line: %d token: RELOP value: LEQ\n", yyline); write;
+">="    sprintf(output, "line: %d token: RELOP value: GEQ\n", yyline); write;
 %%
 
 int yywrap(void){
