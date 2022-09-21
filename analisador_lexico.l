@@ -21,6 +21,20 @@
 "/"     sprintf(output, "line: %d token: MULOP value: /\n", yyline); write;
 "&&"    sprintf(output, "line: %d token: MULOP value: AND\n", yyline); write;
 
+    //Subistituir por um título genérico
+"!"    sprintf(output, "line: %d token: Exclamation point \n", yyline); write;
+";"    sprintf(output, "line: %d token: Semicolon \n", yyline); write;
+"="    sprintf(output, "line: %d token: Equal sign \n", yyline); write;
+":"    sprintf(output, "line: %d token: Colon \n", yyline); write;
+","    sprintf(output, "line: %d token: Coma \n", yyline); write;
+"{"    sprintf(output, "line: %d token: Left brace \n", yyline); write;
+"}"    sprintf(output, "line: %d token: Right brace n", yyline); write;
+"["    sprintf(output, "line: %d token: Left bracket n", yyline); write;
+"]"    sprintf(output, "line: %d token: Right bracket \n", yyline); write;
+"("    sprintf(output, "line: %d token: Left parenthesis \n", yyline); write;
+")"    sprintf(output, "line: %d token: Right parenthesis \n", yyline); write;
+
+
 %%
 
 int yywrap(void){
