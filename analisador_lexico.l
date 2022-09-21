@@ -34,7 +34,17 @@
 "("    sprintf(output, "line: %d token: Left parenthesis \n", yyline); write;
 ")"    sprintf(output, "line: %d token: Right parenthesis \n", yyline); write;
 
+    // Adicionar constantes e ID #5 
+[0-9][0-9]*     sprintf(output, "line: %d token: CONST \n", yyline); write;
+[a-zA-Z][a-zA-Z0-9]*    sprintf(output, "line: %d token: ID \n", yyline); write;
 
+    // Adicionar operadores relacionais #1 
+"=="    sprintf(output, "line: %d token: RELOP EQ\n", yyline); write;
+"!="    sprintf(output, "line: %d token: RELOP DIF\n", yyline); write;
+"<"     sprintf(output, "line: %d token: RELOP LT\n", yyline); write;
+">"     sprintf(output, "line: %d token: RELOP GT\n", yyline); write;
+"<="    sprintf(output, "line: %d token: RELOP LEQ\n", yyline); write;
+">="    sprintf(output, "line: %d token: RELOP GEQ\n", yyline); write;
 %%
 
 int yywrap(void){
