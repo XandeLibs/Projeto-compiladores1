@@ -12,14 +12,12 @@ integer {digit}+
 letter [a-zA-Z]
 identifier [a-zA-Z][a-zA-Z0-9]*
 empty [ ]
-//coment [^*/]*
 
 %%
 
 \n  yyline++;/*contador de linhas*/
 [ \t\n]+ ;   /*não faz nada quando encontra espaço*/
 {empty}+ ;
-// "/*"{coment}"*/" ; /*ignora comentários*/
 
         /*operadores de adição*/
 "+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); write;
@@ -45,8 +43,7 @@ empty [ ]
 ")"    sprintf(output, "line: %d token: RP\n", yyline); write;
 
         /*Adicionar constantes e ID*/
-{integer}               sprintf(output, "line: %d token: CONSTINT value: %s\n", yyline, yytext); write;
-{digito}+[.]{digito}*   sprintf(output, "line: %d token: CONSTFLOAT value: %s\n", yyline, yytext); write;
+{integer}               sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); write;
 {identifier}+           sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); write;
 
         /*Adicionar operadores relacionais*/ 
