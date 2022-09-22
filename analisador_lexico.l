@@ -1,8 +1,11 @@
 %{
     #include <stdio.h>
     #include <string.h>
+    #include<ctype.h>
+
+    FILE *fileIn, *fileInLowerCase;
     char output[50];
-    int yyline;
+    int a, yyline;
 %}
 
 /*Definições macros*/
@@ -62,9 +65,20 @@ int yywrap(void){
 }
 
 int main(void){
-    yyin = fopen("in.txt", "r");
-    yyout = fopen("out.txt", "w");
-    yylex();
-    fclose(yyin);
-    return 0;
+        fileIn=fopen("in.txt","r");
+        fileInLowerCase=fopen("in-lowercase.txt","w+"); 
+
+        /* Converte arquivo de entrada para letras minusculas */
+        while ((a = fgetc(fileIn)) != EOF) {
+                a = tolower(a);
+                fputc(a, fileInLowerCase);
+        };
+
+        rewind(fileInLowerCase);
+
+        yyin = fileInLowerCase;
+        yyout = fopen("out.txt", "w");
+        yylex();
+        fclose(yyin);
+        return 0;
 }
