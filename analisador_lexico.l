@@ -10,13 +10,15 @@ digit [0-9]
 integer {digit}+
 letter [a-zA-Z]
 identifier [a-zA-Z][a-zA-Z0-9]*
-empty [ ]
 
 %%
 
 \n  yyline++;/*contador de linhas*/
 [ \t\n]+ ;   /*não faz nada quando encontra espaço*/
-{empty}+ ;
+
+        /*Identificando as palavras reservadas*/ 
+integer|boolean|true|false|read|write|void|while|if|return|goto|type|function|label|var|else {sprintf(output, "line: %d token: KEY value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;} 
+
 
         /*operadores de adição*/
 "+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); fwrite(output, strlen(output), 1, yyout);;
@@ -52,9 +54,6 @@ empty [ ]
 ">"     sprintf(output, "line: %d token: RELOP value: GT\n", yyline); fwrite(output, strlen(output), 1, yyout);;
 "<="    sprintf(output, "line: %d token: RELOP value: LEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);;
 ">="    sprintf(output, "line: %d token: RELOP value: GEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);;
-
-        /*Identificando as palavras reservadas*/ 
-integer|boolean|true|false|read|write|void|while|if|return|goto|type|function|label|var|else {sprintf(output, "line: %d token: KEY value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;} 
 
 %%
 
