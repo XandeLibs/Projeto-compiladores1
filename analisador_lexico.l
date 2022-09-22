@@ -6,10 +6,20 @@
     #define write fwrite(output, strlen(output), 1, yyout);
 %}
 
+/*Definições macros*/
+digit [0-9]
+integer {digit}+
+letter [a-zA-Z]
+identifier [a-zA-Z][a-zA-Z0-9]*
+empty [ ]
+//coment [^*/]*
+
 %%
 
 \n  yyline++;/*contador de linhas*/
-[ \t\n]+    /*não faz nada quando encontra espaço*/
+[ \t\n]+ ;   /*não faz nada quando encontra espaço*/
+{empty}+ ;
+// "/*"{coment}"*/" ; /*ignora comentários*/
 
         /*operadores de adição*/
 "+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); write;
@@ -21,7 +31,7 @@
 "/"     sprintf(output, "line: %d token: MULOP value: /\n", yyline); write;
 "&&"    sprintf(output, "line: %d token: MULOP value: AND\n", yyline); write;
 
-        /*Subistituir por um título genérico*/
+        /*Substituir por um título genérico*/
 "!"    sprintf(output, "line: %d token: NOT\n", yyline); write;
 ";"    sprintf(output, "line: %d token: SEMICOLON\n", yyline); write;
 "="    sprintf(output, "line: %d token: ASSIGN\n", yyline); write;
@@ -35,8 +45,9 @@
 ")"    sprintf(output, "line: %d token: RP\n", yyline); write;
 
         /*Adicionar constantes e ID*/
-[0-9][0-9]*     sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); write;
-[a-zA-Z][a-zA-Z0-9]*    sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); write;
+{integer}               sprintf(output, "line: %d token: CONSTINT value: %s\n", yyline, yytext); write;
+{digito}+[.]{digito}*   sprintf(output, "line: %d token: CONSTFLOAT value: %s\n", yyline, yytext); write;
+{identifier}+           sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); write;
 
         /*Adicionar operadores relacionais*/ 
 "=="    sprintf(output, "line: %d token: RELOP value: EQ\n", yyline); write;
@@ -45,6 +56,10 @@
 ">"     sprintf(output, "line: %d token: RELOP value: GT\n", yyline); write;
 "<="    sprintf(output, "line: %d token: RELOP value: LEQ\n", yyline); write;
 ">="    sprintf(output, "line: %d token: RELOP value: GEQ\n", yyline); write;
+
+        /*Identificando as palavras reservadas*/ 
+integer|boolean|true|false|read|write|void|while|if|return|goto|type|function|label|var|else {sprintf(output, "line: %d token: KEY value: %s\n", yyline, yytext); write;} 
+
 %%
 
 int yywrap(void){
