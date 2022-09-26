@@ -1,11 +1,13 @@
 %{
     #include <stdio.h>
     #include <string.h>
-    #include<ctype.h>
+    #include <ctype.h>
+    #include "linkedlist.c"
 
     FILE *fileIn, *fileInLowerCase;
     char output[50];
     int a, yyline;
+    node *LISTA_DE_SIMBOLOS = NULL;
 %}
 
 /*Definições macros*/
@@ -21,7 +23,6 @@ identifier [a-zA-Z][a-zA-Z0-9]*
 
         /*Identificando as palavras reservadas*/ 
 integer|boolean|true|false|read|write|void|while|if|return|goto|type|function|label|var|else {sprintf(output, "line: %d token: KEY value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;} 
-
 
         /*operadores de adição*/
 "+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); fwrite(output, strlen(output), 1, yyout);;
@@ -48,7 +49,10 @@ integer|boolean|true|false|read|write|void|while|if|return|goto|type|function|la
 
         /*Adicionar constantes e ID*/
 {integer}               sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;
-{identifier}+           sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;
+{identifier}+           {sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);
+                        add(LISTA_DE_SIMBOLOS, yytext);
+                        printf("%s ", yytext);};
+
 
         /*Adicionar operadores relacionais*/ 
 "=="    sprintf(output, "line: %d token: RELOP value: EQ\n", yyline); fwrite(output, strlen(output), 1, yyout);;
@@ -79,6 +83,9 @@ int main(void){
         yyin = fileInLowerCase;
         yyout = fopen("out.txt", "w");
         yylex();
-        fclose(yyin);
+        fclose(fileIn);
+        fclose(fileInLowerCase);
+        fclose(yyout);
+
         return 0;
 }
