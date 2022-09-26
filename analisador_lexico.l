@@ -50,8 +50,7 @@ integer|boolean|true|false|read|write|void|while|if|return|goto|type|function|la
         /*Adicionar constantes e ID*/
 {integer}               sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;
 {identifier}+           {sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);
-                        add(LISTA_DE_SIMBOLOS, yytext);
-                        printf("%s ", yytext);};
+                        add(LISTA_DE_SIMBOLOS, yytext);};
 
 
         /*Adicionar operadores relacionais*/ 
