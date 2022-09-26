@@ -25,7 +25,6 @@ void add(struct link_node *list, char ID[]) {
 		list = newNode;
 	}
 	else{
-		printf("newnode com lista\n");
 		newNode = compare_list(list, ID);
 		if (newNode != NULL){
 			add_node(newNode, ID);
