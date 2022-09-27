@@ -18,7 +18,7 @@ identifier [a-zA-Z][a-zA-Z0-9]*
 %%
 
 \n  yyline++;/*contador de linhas*/
-[ \t\n]+ ;   /*não faz nada quando encontra espaço*/
+[ \t]+ ;   /*não faz nada quando encontra espaço*/
 
         /*Identificando as palavras reservadas*/ 
 integer|boolean|true|false|read|write|void|while|if|return|goto|types|functions|labels|vars|var|else {sprintf(output, "line: %d token: KEY value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;} 
