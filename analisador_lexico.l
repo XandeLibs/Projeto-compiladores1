@@ -4,7 +4,7 @@
     #include <ctype.h>
     #include "linkedlist.c"
 
-    FILE *fileIn, *fileInLowerCase;
+    FILE *fileIn, *fileOut, *fileInLowerCase;
     char output[50];
     int a, yyline;
     node *LISTA_DE_SIMBOLOS = NULL;
@@ -65,26 +65,57 @@ int yywrap(void){
     return 1;
 }
 
-int main(void){
-        fileIn=fopen("in.txt","r");
-        fileInLowerCase=fopen("in-lowercase.txt","w+"); 
-
-        /* Converte arquivo de entrada para letras minusculas */
-        while ((a = fgetc(fileIn)) != EOF) {
-                a = tolower(a);
-                fputc(a, fileInLowerCase);
-        };
-
-        rewind(fileInLowerCase);
-
-        yyin = fileInLowerCase;
-        yyout = fopen("out.txt", "w");
-        yylex();
-        display_list(LISTA_DE_SIMBOLOS);
-        fclose(fileIn);
-        fclose(fileInLowerCase);
-        fclose(yyout);
-        free_list(LISTA_DE_SIMBOLOS);
-
+int main(int argc, char const *argv[]){
+    if(argc > 1){
+        if(!strcmp(argv[1],"--help")){
+            printf("Analisador Lexico para a linguagem Amaury++\nUso: Compilador <arquivo txt de entrada> [<arquivo txt de saida>]\n");
+            return 0;
+        }
+        else{
+            char *fext = strrchr(argv[1], '.');
+            if(fext && !strcmp(fext, ".txt")){
+                fileIn = fopen(argv[1], "r");
+            }
+            else{
+                printf("O arquivo de entrada deve ter a extensao txt\n");
+                return 0;
+            }
+            
+            if(argc > 2){
+                fext = strrchr(argv[2], '.');
+                if(fext && !strcmp(fext, ".txt")){
+                    yyout = fopen(argv[2], "w");
+                }
+                else{
+                    printf("O arquivo de saida deve ter a extensao txt\n");
+                    return 0;
+                }
+            }
+            else
+                yyout = fopen("out.txt", "w");
+        }
+    }
+    else{
+        printf("Uso indevido: Arquivo de entrada faltando\n");
         return 0;
+    }
+    fileInLowerCase=fopen("in-lowercase.txt","w+"); 
+
+    /* Converte arquivo de entrada para letras minusculas */
+    while ((a = fgetc(fileIn)) != EOF) {
+            a = tolower(a);
+            fputc(a, fileInLowerCase);
+    };
+
+    rewind(fileInLowerCase);
+
+    yyin = fileInLowerCase;
+    yylex();
+    display_list(LISTA_DE_SIMBOLOS);
+    fclose(fileIn);
+    fclose(fileInLowerCase);
+    fclose(yyout);
+    free_list(LISTA_DE_SIMBOLOS);
+
+    return 0;
 }
