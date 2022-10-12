@@ -1,3 +1,4 @@
+%option caseless
 %{
     #include <stdio.h>
     #include <string.h>
@@ -8,6 +9,13 @@
     char output[50];
     int a, yyline;
     node *LISTA_DE_SIMBOLOS = NULL;
+    
+void yyerror(){
+    printf("Simbolo nao reconhecido: '%s' linha: %d\n", yytext, yyline);
+    fclose(yyin);
+    fclose(yyout);
+    free_list(LISTA_DE_SIMBOLOS);
+}
 %}
 
 /*Definições macros*/
@@ -59,6 +67,8 @@ integer|boolean|true|false|read|write|void|while|if|return|goto|types|functions|
 "<="    sprintf(output, "line: %d token: RELOP value: LEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);
 ">="    sprintf(output, "line: %d token: RELOP value: GEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);
 
+.       yyerror(); return 0;
+
 %%
 
 int yywrap(void){
@@ -66,54 +76,31 @@ int yywrap(void){
 }
 
 int main(int argc, char const *argv[]){
-    if(argc > 1){
-        if(!strcmp(argv[1],"--help")){
-            printf("Analisador Lexico para a linguagem Amaury++\nUso: Compilador <arquivo txt de entrada> [<arquivo txt de saida>]\n");
-            return 0;
-        }
-        else{
-            char *fext = strrchr(argv[1], '.');
-            if(fext && !strcmp(fext, ".txt")){
-                fileIn = fopen(argv[1], "r");
-            }
-            else{
-                printf("O arquivo de entrada deve ter a extensao txt\n");
-                return 0;
-            }
-            
+    if(argc > 1 ){
+        if(!strcmp(strrchr(argv[1],'\0') - 4, ".txt")){
+            yyin = fopen(argv[1], "r");
             if(argc > 2){
-                fext = strrchr(argv[2], '.');
-                if(fext && !strcmp(fext, ".txt")){
-                    yyout = fopen(argv[2], "w");
-                }
+                if (!strcmp(strrchr(argv[2],'\0') - 4, ".txt"))
+                    yyout = fopen("out.txt", "w");
                 else{
-                    printf("O arquivo de saida deve ter a extensao txt\n");
+                    printf("Arquivo de saida deve ter extensao txt\nUso: Analisador.exe <arquivo txt de entrada> [<arquivo txt de saida>]\n");
                     return 0;
                 }
             }
-            else
-                yyout = fopen("out.txt", "w");
+        }
+        else{
+            printf("Arquivo de entrada deve ter extensao txt\nUso: Analisador.exe <arquivo txt de entrada> [<arquivo txt de saida>]\n");
+            return 0;
         }
     }
     else{
-        printf("Uso indevido: Arquivo de entrada faltando\n");
+        printf("Arquivo de entrada faltando\nUso: Analisador.exe <arquivo txt de entrada> [<arquivo txt de saida>]\n");
         return 0;
     }
-    fileInLowerCase=fopen("in-lowercase.txt","w+"); 
-
-    /* Converte arquivo de entrada para letras minusculas */
-    while ((a = fgetc(fileIn)) != EOF) {
-            a = tolower(a);
-            fputc(a, fileInLowerCase);
-    };
-
-    rewind(fileInLowerCase);
-
-    yyin = fileInLowerCase;
+    
     yylex();
     display_list(LISTA_DE_SIMBOLOS);
-    fclose(fileIn);
-    fclose(fileInLowerCase);
+    fclose(yyin);
     fclose(yyout);
     free_list(LISTA_DE_SIMBOLOS);
 
