@@ -1,3 +1,8 @@
+%{
+int yylex(void);
+int yyerror(const char *s);
+%}
+
 %union {int num; char id; char op;}
 %token <op> ADDOP
 %token <op> MULOP
@@ -181,9 +186,3 @@ expression_list1 : expression_list1 COMMA expression
 				;
 
 %%
-
-#include "lex.yy.c"
-
-main(){
-	return yyparse();
-}

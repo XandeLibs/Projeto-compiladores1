@@ -4,18 +4,14 @@
     #include <string.h>
     #include <ctype.h>
     #include "linkedlist.c"
+    #include "y.tab.h"
 
     FILE *fileIn, *fileOut, *fileInLowerCase;
     char output[50];
     int a, yyline;
     node *LISTA_DE_SIMBOLOS = NULL;
     
-void yyerror(){
-    printf("Simbolo nao reconhecido: '%s' linha: %d\n", yytext, yyline);
-    fclose(yyin);
-    fclose(yyout);
-    free_list(LISTA_DE_SIMBOLOS);
-}
+void yyerror();
 %}
 
 /*Definições macros*/
@@ -32,47 +28,54 @@ identifier [a-zA-Z][a-zA-Z0-9]*
 integer|boolean|true|false|read|write|void|while|if|return|goto|types|functions|labels|vars|var|else {sprintf(output, "line: %d token: KEY value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);;} 
 
         /*operadores de adição*/
-"+"     sprintf(output, "line: %d token: ADDOP value: +\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"-"     sprintf(output, "line: %d token: ADDOP value: -\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"||"    sprintf(output, "line: %d token: ADDOP value: OR\n", yyline); fwrite(output, strlen(output), 1, yyout);
+"+"     return ADDOP;/*sprintf(output, "line: %d token: ADDOP value: +\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"-"     return ADDOP;/*sprintf(output, "line: %d token: ADDOP value: -\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"||"    return ADDOP;/*sprintf(output, "line: %d token: ADDOP value: OR\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
 
         /*operadores de multiplicação*/
-"*"     sprintf(output, "line: %d token: MULOP value: *\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"/"     sprintf(output, "line: %d token: MULOP value: /\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"&&"    sprintf(output, "line: %d token: MULOP value: AND\n", yyline); fwrite(output, strlen(output), 1, yyout);
+"*"     return MULOP;/*sprintf(output, "line: %d token: MULOP value: *\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"/"     return MULOP;/*sprintf(output, "line: %d token: MULOP value: /\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"&&"    return MULOP;/*sprintf(output, "line: %d token: MULOP value: AND\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
 
         /*Simbolos simples*/
-"!"    sprintf(output, "line: %d token: NOT\n", yyline); fwrite(output, strlen(output), 1, yyout);
-";"    sprintf(output, "line: %d token: SEMICOLON\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"="    sprintf(output, "line: %d token: ASSIGN\n", yyline); fwrite(output, strlen(output), 1, yyout);
-":"    sprintf(output, "line: %d token: COLON\n", yyline); fwrite(output, strlen(output), 1, yyout);
-","    sprintf(output, "line: %d token: COMMA\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"{"    sprintf(output, "line: %d token: LCB\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"}"    sprintf(output, "line: %d token: RCB\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"["    sprintf(output, "line: %d token: LB\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"]"    sprintf(output, "line: %d token: RB\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"("    sprintf(output, "line: %d token: LP\n", yyline); fwrite(output, strlen(output), 1, yyout);
-")"    sprintf(output, "line: %d token: RP\n", yyline); fwrite(output, strlen(output), 1, yyout);
+"!"    return NOT;/*sprintf(output, "line: %d token: NOT\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+";"    return SEMICOLON;/*sprintf(output, "line: %d token: SEMICOLON\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"="    return ASSIGN;/*sprintf(output, "line: %d token: ASSIGN\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+":"    return COLON;/*sprintf(output, "line: %d token: COLON\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+","    return COMMA;/*sprintf(output, "line: %d token: COMMA\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"{"    return LCB;/*sprintf(output, "line: %d token: LCB\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"}"    return RCB;/*sprintf(output, "line: %d token: RCB\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"["    return LB;/*sprintf(output, "line: %d token: LB\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"]"    return RB;/*sprintf(output, "line: %d token: RB\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"("    return LP;/*sprintf(output, "line: %d token: LP\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+")"    return RP;/*sprintf(output, "line: %d token: RP\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
 
         /*Adicionar constantes e ID*/
-{integer}               sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);
-{identifier}+           sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout); add(LISTA_DE_SIMBOLOS, yytext);
+{integer}               return INT;/*sprintf(output, "line: %d token: CONST value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout);*/
+{identifier}+           return ID;/*sprintf(output, "line: %d token: ID value: %s\n", yyline, yytext); fwrite(output, strlen(output), 1, yyout); add(LISTA_DE_SIMBOLOS, yytext);*/
                         
 
         /*Adicionar operadores relacionais*/ 
-"=="    sprintf(output, "line: %d token: RELOP value: EQ\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"!="    sprintf(output, "line: %d token: RELOP value: NEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"<"     sprintf(output, "line: %d token: RELOP value: LT\n", yyline); fwrite(output, strlen(output), 1, yyout);
-">"     sprintf(output, "line: %d token: RELOP value: GT\n", yyline); fwrite(output, strlen(output), 1, yyout);
-"<="    sprintf(output, "line: %d token: RELOP value: LEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);
-">="    sprintf(output, "line: %d token: RELOP value: GEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);
+"=="    return RELOP;/*sprintf(output, "line: %d token: RELOP value: EQ\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"!="    return RELOP;/*sprintf(output, "line: %d token: RELOP value: NEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"<"     return RELOP;/*sprintf(output, "line: %d token: RELOP value: LT\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+">"     return RELOP;/*sprintf(output, "line: %d token: RELOP value: GT\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+"<="    return RELOP;/*sprintf(output, "line: %d token: RELOP value: LEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
+">="    return RELOP;/*sprintf(output, "line: %d token: RELOP value: GEQ\n", yyline); fwrite(output, strlen(output), 1, yyout);*/
 
-.       yyerror(); return 0;
+.       yyerror(); return -1;
 
 %%
 
+void yyerror(){
+    printf("Simbolo nao reconhecido: '%s' linha: %d\n", yytext, yyline);
+    fclose(yyin);
+    fclose(yyout);
+    free_list(LISTA_DE_SIMBOLOS);
+}
+
 int yywrap(void){
-    return 1;
+    return 0;
 }
 
 int main(int argc, char const *argv[]){
