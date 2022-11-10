@@ -3,8 +3,8 @@
 #define nSymbols 26
 enum {LETRA=nSymbols, DIGITO, INVALIDO};
 
-enum tKeyword {INTEGER, BOOLEAN, TRUE, FALSE, READ, WRITE, VOID, WHILE, IF, RETURN, GOTO, TYPES, FUNCTIONS, LABELS, VARS, VAR, ELSE, nKeywords};
-enum tTerminal {ID=nKeywords, CONST, ADDOP, MULOP, NOT, SEMICOLON, ASSIGN, COLON, COMMA, LCB, RCB, LB, RB, LP, RP, RELOP, FIM_ARQ, nTerminal};
+enum tKeyword {INTEGER, BOOLEAN, TRUE, FALSE, READ, WRITE, VOID, WHILE, IF, RETURN, GOTO, FUNCTIONS, LABELS, VARS, VAR, ELSE, nKeywords};
+enum tTerminal {ID=nKeywords, CONST, ADDOP, OR, MULOP, NOT, SEMICOLON, ASSIGN, COLON, COMMA, LCB, RCB, LB, RB, LP, RP, RELOP, FIM_ARQ, nTerminal};
 enum tErros{ERRO_LEXICO=nTerminal, ERRO_SINTATICO};
 extern int lines;
 extern char lexema[100];

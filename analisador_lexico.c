@@ -8,12 +8,12 @@ int linhas, lextam;
 char c;
 
 char *keywords[] = {
-    "integer", "boolean", "true", "false", "read", "write", "void", "while", "if", "return", "goto", "types", "functions", "labels", "vars", "var", "else"
+    "integer", "boolean", "true", "false", "read", "write", "void", "while", "if", "return", "goto", "functions", "labels", "vars", "var", "else"
 };
 
 char *terminais[] = {
-    "integer", "boolean", "true", "false", "read", "write", "void", "while", "if", "return", "goto", "types", "functions", "labels", "vars", "var", "else", "ID", "CONST",
-    "ADDOP", "MULOP", "NOT", "SEMICOLON", "ASSIGN", "COLON", "COMMA", "LCB", "RCB", "LB", "RB", "LP", "RP", "RELOP"
+    "integer", "boolean", "true", "false", "read", "write", "void", "while", "if", "return", "goto", "functions", "labels", "vars", "var", "else", "ID", "CONST",
+    "ADDOP", "OR", "MULOP", "NOT", "SEMICOLON", "ASSIGN", "COLON", "COMMA", "LCB", "RCB", "LB", "RB", "LP", "RP", "RELOP"
 };
 
 char checaKeyword(char *c){
@@ -38,8 +38,8 @@ char checaKeyword(char *c){
     
 }
 
-    int lex()
-    {
+int lex()
+{
     int estado_atual, prox_estado, next, t;
 
     lextam = 0;
@@ -52,76 +52,83 @@ char checaKeyword(char *c){
 
     switch(estado_atual){
     case 0:
-        switch(c){
-        case '\n':
-            lines++;
-        case '\t':
-        case ' ':
-            lextam--;
+    switch(c){
+    case '\n':
+        lines++;
+    case '\t':
+    case ' ':
+        lextam--;
+        break;
+    case '+':
+        return ADDOP;
+    case '-':
+        return ADDOP;
+    case '|':
+        estado_atual = 1;
+    case '*':
+        return MULOP;
+    case '/':
+        return MULOP;
+    case '&':
+        estado_atual = 2;
+        break;
+    case '!':
+        estado_atual = 3;
+        break;
+    case ';':
+        return SEMICOLON;
+    case '=':
+        estado_atual = 4;
+        break;
+    case ':':
+        return COLON;
+    case ',':
+        return COMMA;
+    case '{':
+        return LCB;
+    case '}':
+        return RCB;
+    case '[':
+        return LB;
+    case ']':
+        return RB;
+    case '(':
+        return LP;
+    case ')':
+        return RP;
+    case '<':
+        estado_atual = 5;
+        break;
+    case '>':
+        estado_atual = 5;
+        break;
+    default:
+        if(isdigit(c)){
+            estado_atual = 6;
+        }
+        else if(isalpha(c)){
+            estado_atual = 7;
+        }
+        else if(!feof(fin))
+            return ERRO_LEXICO;
             break;
-        case '+':
-            return ADDOP;
-        case '-':
-            return ADDOP;
-        case '|':
-            return ADDOP;
-        case '*':
-            return MULOP;
-        case '/':
-            return MULOP;
-        case '&':
-            estado_atual = 1;
-            break;
-        case '!':
-            estado_atual = 2;
-            break;
-        case ';':
-            return SEMICOLON;
-        case '=':
-            estado_atual = 3;
-            break;
-        case ':':
-            return COLON;
-        case ',':
-            return COMMA;
-        case '{':
-            return LCB;
-        case '}':
-            return RCB;
-        case '[':
-            return LB;
-        case ']':
-            return RB;
-        case '(':
-            return LP;
-        case ')':
-            return RP;
-        case '<':
-            estado_atual = 4;
-            break;
-        case '>':
-            estado_atual = 4;
-            break;
-        default:
-            if(isdigit(c)){
-                estado_atual = 5;
-            }
-            else if(isalpha(c)){
-                estado_atual = 6;
-            }
-            else if(!feof(fin))
-                return ERRO_LEXICO;
-                break;
-            }
-            break;
-    case 1:         //achou '&', espera outro
-        if(c=='&'){
+        }
+        break;
+    case 1:
+        if(c == '|'){
+            return OR;
+        }
+        else{
+            return ERRO_LEXICO;
+        }
+    case 2:         //achou '&', espera outro
+        if(c == '&'){
             return MULOP;
         }
         else{
             return ERRO_LEXICO;
         }
-    case 2:         //achou '!', espera '=' ou algo diferente
+    case 3:         //achou '!', espera '=' ou algo diferente
         if(c=='='){
             return RELOP;
         }
@@ -130,7 +137,7 @@ char checaKeyword(char *c){
             lexema[--lextam]='\0';
             return NOT;
         }
-    case 3:         //achou '=', espera outro ou algo diferente
+    case 4:         //achou '=', espera outro ou algo diferente
         if(c=='='){
             return RELOP;
         }
@@ -139,20 +146,20 @@ char checaKeyword(char *c){
             lexema[--lextam]='\0';
             return ASSIGN;
         }
-    case 4:         //achou '<' ou '>', espera '=' ou algo diferente
+    case 5:         //achou '<' ou '>', espera '=' ou algo diferente
         if(c!='='){
             ungetc(c,fin);
             lexema[--lextam]='\0';
         }
         return RELOP;
-    case 5:         //achou digito
+    case 6:         //achou digito
         if(!isdigit(c)){
             ungetc(c,fin);
             lexema[--lextam]='\0';
             return CONST;
         }
         break;
-    case 6:         //achou char
+    case 7:         //achou char
         if(!isalpha(c) && !isdigit(c)){
             ungetc(c,fin);
             lexema[--lextam]='\0';
@@ -166,4 +173,4 @@ char checaKeyword(char *c){
             return FIM_ARQ;
     }
     return ERRO_LEXICO;
-    }
+}
