@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "analisador_lexico.h"
 #include "analisador_sintatico.h"
+#include "tabeladesimbolos.h"
 
 int lookahead;
 FILE *fin;
@@ -13,7 +14,7 @@ void match(int t)
         lookahead=lex();
     }
     else{
-        printf("\nErro(linha=%d): token %s esperado.## Encontrado \"%s\"\n", lines, terminalName[t], t, lexema);
+        printf("\nErro(linha=%d): token %s esperado.## Encontrado \"%s\"\n", lines, terminais[t], lexema);
     }
 }
 
@@ -31,8 +32,9 @@ void function(){
     else{
         match(VOID);
     }
-    match(formal_parameters);
-    match(block);
+    match(ID);
+    formal_parameters();
+    block();
 }
 
 // block -> body
@@ -73,7 +75,7 @@ void variables(){
     variables_();
 }
 
-// variables_ -> identifier_list COLON type SEMICOLON variables_
+// variables_ -> VARS identifier_list COLON type SEMICOLON variables_
 //             | epsilon
 void variables_(){
     if(lookahead == VARS){
@@ -423,8 +425,8 @@ void expression_list_(){
 
 char *parser()
 {
-   lookahead=lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
-   S(); // chama a variável inicial da gramática.
+   lookahead = lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
+   program(); // chama a variável inicial da gramática.
    if(lookahead==FIM_ARQ)
       return("Programa sintaticamente correto!");
    else
@@ -433,6 +435,9 @@ char *parser()
 
 int main(int argc, char**argv)
 {
+    Tabela *Symb;
+    Symb = maketabela();
+
     if(argc<2){
         printf("\nUso: analisador <nome do arquivo>\n");
         return 1;

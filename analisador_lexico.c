@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "analisador_lexico.h"
 
 char lexema[100];
-int linhas, lextam;
+int lines, lextam;
 char c;
 
 char *keywords[] = {

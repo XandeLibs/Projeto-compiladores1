@@ -8,9 +8,8 @@ enum tTerminal {ID=nKeywords, CONST, ADDOP, OR, MULOP, NOT, SEMICOLON, ASSIGN, C
 enum tErros{ERRO_LEXICO=nTerminal, ERRO_SINTATICO};
 extern int lines;
 extern char lexema[100];
-extern char *terminalName[];
+extern char *terminais[];
 extern FILE *fin;
 
-char nextSymbol (FILE* fin);
 char checaKeyword (char *s);
 int lex();
