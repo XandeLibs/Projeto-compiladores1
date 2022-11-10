@@ -172,14 +172,18 @@ void expression_parameter(){
     match(ID);
 }
 
-// statement -> identifier : unlabeled_statement
+// statement -> ID : unlabeled_statement
 //            | unlabeled_statement
 //            | compound
 void statement(){
+    if(lookahead == LCB){
+        compound();
+    }
+    
 
 }
 
-// unlabeled_statement -> ID (assignement | function_call SEMICOLON)
+// unlabeled_statement -> ID unlabeled_statement_
 //                      | GOTO
 //                      | RETURN
 //                      | conditional
@@ -188,13 +192,7 @@ void statement(){
 void unlabeled_statement(){
     if(lookahead == ID){
         match(ID);
-        if(lookahead == LP){
-            function_call();
-            match(SEMICOLON);
-        }
-        else{
-            assignment();
-        }
+        unlabeled_statement_();
     }
     else if(lookahead == GOTO){
         match(GOTO);
@@ -213,7 +211,19 @@ void unlabeled_statement(){
     }
 }
 
-// assignment -> ID ASSIGN expression SEMICOLON
+// unlabeled_statement_ -> assignement
+//                       | function_call SEMICOLON
+void unlabeled_statement_(){
+    if(lookahead == LP){
+        function_call();
+        match(SEMICOLON);
+    }
+    else{
+        assignment();
+    }
+}
+
+// assignment -> ASSIGN expression SEMICOLON
 void assignment(){
     match(ASSIGN);
     expression();
@@ -338,17 +348,14 @@ void term_(){
     }
 }
 
-// factor -> ID
+// factor -> ID factor_
 //         | CONST
-//         | ID function_call
 //         | LP expression RP
 //         | NOT factor
 void factor(){
     if(lookahead == ID){
         match(ID);
-        if(lookahead == LP){
-            function_call();
-        }
+        factor_();
     }
     else if(lookahead == CONST){
         match(CONST);
@@ -361,6 +368,14 @@ void factor(){
     else if(lookahead == NOT){
         match(NOT);
         factor();
+    }
+}
+
+// factor_ -> function_call
+//          | epsilon
+void factor_(){
+    if(lookahead == LP){
+        function_call();
     }
 }
 
