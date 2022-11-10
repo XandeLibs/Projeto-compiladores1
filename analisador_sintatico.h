@@ -17,7 +17,6 @@ void formal_parameters();
 void formal_parameters_();
 void formal_parameter();
 void expression_parameter();
-void function_parameter();
 void statement();
 void variable();
 void variable_();
