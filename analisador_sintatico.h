@@ -5,8 +5,6 @@ void program();
 void function();
 void block();
 void labels();
-void types();
-void types_();
 void variables();
 void variables_();
 void functions();

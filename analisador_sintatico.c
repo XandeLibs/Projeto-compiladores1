@@ -53,16 +53,6 @@ void labels(){
     identifier_list();
 }
 
-// types -> TYPES ID ASSIGN type SEMICOLON types_
-void types(){
-    match(TYPES);
-    match(ID);
-    match(ASSIGN);
-    type();
-    match(SEMICOLON);
-    types_();
-}
-
 // variables -> VARS identifier_list COLON type SEMICOLON variables_
 void variables(){
     match(VARS);
@@ -443,4 +433,3 @@ int main(int argc, char**argv)
         return 0;
     }
 }
-
