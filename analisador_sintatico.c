@@ -44,13 +44,23 @@ void function(){
 //        | variables functions body
 //        | labels variables functions body
 void block(){
-
+    if(lookahead == LABELS){
+        labels();
+    }
+    if(lookahead == VARS){
+        variables();
+    }
+    if(lookahead == FUNCTIONS){
+        functions();
+    }
+    body();
 }
 
-// labels -> LABELS identifier_list
+// labels -> LABELS identifier_list SEMICOLON
 void labels(){
     match(LABELS);
     identifier_list();
+    match(SEMICOLON);
 }
 
 // variables -> VARS identifier_list COLON type SEMICOLON variables_
@@ -166,15 +176,10 @@ void expression_parameter(){
 //            | unlabeled_statement
 //            | compound
 void statement(){
+
 }
 
-// variable -> ID
-void variable(){
-    match(ID);
-}
-
-// unlabeled_statement -> assignement
-//                      | function_call_statement
+// unlabeled_statement -> ID (assignement | function_call SEMICOLON)
 //                      | GOTO
 //                      | RETURN
 //                      | conditional
@@ -182,10 +187,14 @@ void variable(){
 //                      | SEMICOLON
 void unlabeled_statement(){
     if(lookahead == ID){
-        assignment();
-    }
-    else if(lookahead == ID){//arrumar isso aqui
-        function_call_statement();
+        match(ID);
+        if(lookahead == LP){
+            function_call();
+            match(SEMICOLON);
+        }
+        else{
+            assignment();
+        }
     }
     else if(lookahead == GOTO){
         match(GOTO);
@@ -204,9 +213,8 @@ void unlabeled_statement(){
     }
 }
 
-// assignment -> variable ASSIGN expression SEMICOLON
+// assignment -> ID ASSIGN expression SEMICOLON
 void assignment(){
-    variable();
     match(ASSIGN);
     expression();
     match(SEMICOLON);
@@ -330,17 +338,17 @@ void term_(){
     }
 }
 
-// factor -> variable
+// factor -> ID
 //         | CONST
-//         | function_call
+//         | ID function_call
 //         | LP expression RP
 //         | NOT factor
 void factor(){
     if(lookahead == ID){
         match(ID);
-    }
-    else if(lookahead == ID){//arrumar isso aqui tbm
-        function_call();
+        if(lookahead == LP){
+            function_call();
+        }
     }
     else if(lookahead == CONST){
         match(CONST);
@@ -358,7 +366,6 @@ void factor(){
 
 // function_call -> ID LP expression_list RP
 void function_call(){
-    match(ID);
     match(LP);
     expression_list();
     match(RP);
@@ -399,12 +406,6 @@ void expression_list_(){
     }
 }
 
-
-/*******************************************************************************************
- parser(): 
- - efetua o processamento do automato com pilha AP
- - devolve uma mensagem para indicar se a "palavra" (programa) estah sintaticamente correta.
-********************************************************************************************/
 char *parser()
 {
    lookahead=lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
