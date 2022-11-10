@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tabeladesimbolos.h"
 #include <stdbool.h>
+#include "tabeladesimbolos.h"
 
 typedef enum {
 T_PREDEF = 1,
 T_FUNCTION } TypeConstr;
 
-typedef struct _typeDescr {
+struct _typeDescr {
   TypeConstr constr;
   int size;
-} TypeDescr, *TypeDescrPtr;
+};
 
 typedef struct _Constant {
   int value;

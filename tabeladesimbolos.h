@@ -1,8 +1,11 @@
 #ifndef TABELA_HEADER
 #define TABELA_HEADER
+#include <stdbool.h>
 
 typedef struct _symbEntry SymbEntry;
 typedef struct tabela Tabela;
+typedef struct _TypeDescr *TypeDescrPtr;
+typedef struct _TypeDescr TypeDescr;
 typedef enum {S_CONST = 1, S_VARIABLE, S_PARAMETER, S_FUNCTION, S_LABEL} SymbCateg;
 typedef enum {P_VALUE = 1, P_VARIABLE} Passage;
 
