@@ -10,11 +10,17 @@ FILE *fin;
 /* Exige que o próximo terminal seja t e avança o ponteiro da fita de entrada (i.e., pega o próximo terminal) */
 void match(int t)
 {
-    if(lookahead==t){
-        lookahead=lex();
+    if(lookahead == ERRO_LEXICO){
+        printf("Erro lexico, %s nao faz parte da linguagem\n", lexema);
+        exit(-1);
+    }
+    else if(lookahead == t){
+        //printf("Linha:%d: Encontrou %s\n", lines, lexema);
+        lookahead = lex();
     }
     else{
         printf("\nErro(linha=%d): token %s esperado.## Encontrado \"%s\"\n", lines, terminais[t], lexema);
+        lookahead = lex();
     }
 }
 
@@ -75,11 +81,10 @@ void variables(){
     variables_();
 }
 
-// variables_ -> VARS identifier_list COLON type SEMICOLON variables_
+// variables_ -> identifier_list COLON type SEMICOLON variables_
 //             | epsilon
 void variables_(){
-    if(lookahead == VARS){
-        match(VARS);
+    if(lookahead == ID){
         identifier_list();
         match(COLON);
         type();
@@ -100,7 +105,7 @@ void functions(){
 void functions_(){
     if(lookahead == ID || lookahead == VOID){
         function();
-        functions();
+        functions_();
     }
 }
 
@@ -120,20 +125,9 @@ void body_(){
     }
 }
 
-//type -> ID type_
+//type -> ID
 void type(){
-    type_();
-}
-
-// type_ -> LB CONST RB type_
-//        | epsilon
-void type_(){
-    if(lookahead == LB){
-        match(LB);
-        match(CONST);
-        match(RB);
-        type_();
-    }
+    match(ID);
 }
 
 // formal_parameters -> LP formal_parameter formal_parameters_ RP
@@ -158,7 +152,6 @@ void formal_parameters_(){
 }
 
 // formal_parameter -> expression_parameter
-//                   | function_parameter
 void formal_parameter(){
     expression_parameter();
 }
@@ -174,15 +167,31 @@ void expression_parameter(){
     match(ID);
 }
 
-// statement -> ID : unlabeled_statement
+// statement -> compound
 //            | unlabeled_statement
-//            | compound
+//            | ID statement_
 void statement(){
     if(lookahead == LCB){
         compound();
     }
-    
+    else if(lookahead == ID){
+        match(ID);
+        statement_();
+    }
+    else{
+        unlabeled_statement();
+    }
+}
 
+// statement_ -> : unlabeled_statement
+//             | unlabeled_statement_
+void statement_(){
+    if(lookahead == COLON){
+        unlabeled_statement();
+    }
+    else{
+        unlabeled_statement_();
+    }
 }
 
 // unlabeled_statement -> ID unlabeled_statement_
@@ -232,12 +241,6 @@ void assignment(){
     match(SEMICOLON);
 }
 
-// function_call_statement -> function_call SEMICOLON
-void function_call_statement(){
-    function_call();
-    match(SEMICOLON);
-}
-
 // _goto -> GOTO ID SEMICOLON
 void _goto(){
     match(GOTO);
@@ -275,14 +278,19 @@ void compound_(){
     }
 }
 
-// conditional -> IF LP expression RP compound
-//              | IF LP expression RP compound ELSE compound
+// conditional -> IF LP expression RP compound compound_
 void conditional(){
     match(IF);
     match(LP);
     expression();
     match(RP);
     compound();
+    compound_();
+}
+
+// conditional_ -> ELSE compound
+//               | epsilon
+void conditional_(){
     if(lookahead == ELSE){
         match(ELSE);
         compound();
@@ -307,6 +315,8 @@ void expression(){
         simple_expression();
     }
 }
+
+
 
 // simple_expression -> ADDOP term simple_expression_
 //                    | term simple_expression_
