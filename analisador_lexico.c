@@ -5,11 +5,11 @@
 #include "analisador_lexico.h"
 
 char lexema[100];
-int lines, lextam;
+int lines = 1, lextam;
 char c;
 
 char *keywords[] = {
-    "integer", "boolean", "true", "false", "read", "write", "void", "while", "if", "return", "goto", "functions", "labels", "vars", "var", "else"
+    "boolean", "else", "false", "functions", "goto", "if", "integer", "labels", "read", "return", "true", "var", "vars", "void", "while", "write"
 };
 
 char *terminais[] = {

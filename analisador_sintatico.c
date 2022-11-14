@@ -6,20 +6,23 @@
 
 int lookahead;
 FILE *fin;
+bool correto = true;
 
 /* Exige que o próximo terminal seja t e avança o ponteiro da fita de entrada (i.e., pega o próximo terminal) */
 void match(int t)
 {
+    //printf("Linha:%d: Encontrou %s com valor %d\n", lines, lexema, t);
+
     if(lookahead == ERRO_LEXICO){
         printf("Erro lexico, %s nao faz parte da linguagem\n", lexema);
         exit(-1);
     }
     else if(lookahead == t){
-        //printf("Linha:%d: Encontrou %s\n", lines, lexema);
         lookahead = lex();
     }
     else{
-        printf("\nErro(linha=%d): token %s esperado.## Encontrado \"%s\"\n", lines, terminais[t], lexema);
+        printf("\nErro(linha=%d): token %s esperado. Encontrado \"%s\"\n", lines, terminais[t], lexema);
+        correto = false;
         lookahead = lex();
     }
 }
@@ -119,7 +122,7 @@ void body(){
 // body_ -> statement body_
 //        | epsilon
 void body_(){
-    if(lookahead == ID || lookahead == GOTO || lookahead == RETURN || lookahead == IF || lookahead == WHILE || lookahead == SEMICOLON || lookahead == LCB){
+    if(lookahead == ID || lookahead == READ || lookahead == WRITE || lookahead == INTEGER || lookahead == BOOLEAN || lookahead == GOTO || lookahead == RETURN || lookahead == IF || lookahead == WHILE || lookahead == SEMICOLON || lookahead == LCB){
         statement();
         body_();
     }
@@ -127,7 +130,15 @@ void body_(){
 
 //type -> ID
 void type(){
-    match(ID);
+    if(lookahead == INTEGER){
+        match(INTEGER);
+    }
+    else if(lookahead == BOOLEAN){
+        match(BOOLEAN);
+    }
+    else{
+        match(ID);
+    }
 }
 
 // formal_parameters -> LP formal_parameter formal_parameters_ RP
@@ -178,6 +189,14 @@ void statement(){
         match(ID);
         statement_();
     }
+    else if(lookahead == READ){
+        match(READ);
+        statement_();
+    }
+    else if(lookahead == WRITE){
+        match(WRITE);
+        statement_();
+    }
     else{
         unlabeled_statement();
     }
@@ -205,6 +224,14 @@ void unlabeled_statement(){
         match(ID);
         unlabeled_statement_();
     }
+    else if(lookahead == READ){
+        match(READ);
+        unlabeled_statement_();
+    }
+    else if(lookahead == WRITE){
+        match(WRITE);
+        unlabeled_statement_();
+    }
     else if(lookahead == GOTO){
         match(GOTO);
     }
@@ -215,15 +242,15 @@ void unlabeled_statement(){
         conditional();
     }
     else if(lookahead == WHILE){
-        match(WHILE);
+        repetitive();
     }
-    else if(lookahead == SEMICOLON){
+    else {
         match(SEMICOLON);
     }
 }
 
-// unlabeled_statement_ -> assignement
-//                       | function_call SEMICOLON
+// unlabeled_statement_ -> function_call SEMICOLON
+//                       | assignement
 void unlabeled_statement_(){
     if(lookahead == LP){
         function_call();
@@ -369,6 +396,14 @@ void factor(){
         match(ID);
         factor_();
     }
+    else if(lookahead == READ){
+        match(READ);
+        factor_();
+    }
+    else if(lookahead == WRITE){
+        match(WRITE);
+        factor_;
+    }
     else if(lookahead == CONST){
         match(CONST);
     }
@@ -437,8 +472,10 @@ char *parser()
 {
    lookahead = lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
    program(); // chama a variável inicial da gramática.
-   if(lookahead==FIM_ARQ)
+   if(lookahead==FIM_ARQ){
+    if(correto)
       return("Programa sintaticamente correto!");
+   }
    else
       return("Fim de arquivo esperado");
 }
