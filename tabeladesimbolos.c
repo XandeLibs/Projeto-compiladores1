@@ -1,13 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "tabeladesimbolos.h"
 
-typedef enum {
-T_PREDEF = 1,
-T_FUNCTION } TypeConstr;
-
-struct _typeDescr {
+struct _TypeDescr {
   TypeConstr constr;
   int size;
 };
@@ -39,6 +36,10 @@ typedef struct _Label {
   bool defined;
 } Label;
 
+typedef struct _Type {
+  TypeDescrPtr type;
+} Type;
+
 struct _symbEntry {
   SymbCateg categ;
   char *ident;
@@ -51,6 +52,7 @@ struct _symbEntry {
     Formal_Pam fm;
     Function f;
     Label l;
+    Type t;
   } descr;
 };
 
@@ -128,6 +130,17 @@ void addLabel(SymbCateg categ, char *ident, int level, Tabela * tabela, char *la
   entry->descr.l.defined = defined;
 }
 
+TypeDescrPtr addType(SymbCateg categ, char *ident, int level, Tabela * tabela, TypeConstr predef_function, int size){
+  SymbEntry* entry;
+  entry = add(categ, ident, level, tabela);
+  TypeDescr *description = malloc(sizeof(TypeDescr));
+  description->constr = predef_function;
+  description->size = size;
+  entry->descr.t.type = description;
+  
+  return description;
+}
+
 SymbEntry* add(SymbCateg categ, char *ident, int level, Tabela * tabela){
   SymbEntry * current = NULL;
   if(tabela->head == NULL){
@@ -142,6 +155,17 @@ SymbEntry* add(SymbCateg categ, char *ident, int level, Tabela * tabela){
     current->next = createSymbEntry(categ, ident, level);
     return current->next;
   }
+}
+
+//retorna NULL caso não ache o simbolo
+SymbEntry* search(SymbCateg categ, char *ident, Tabela * tabela){
+  SymbEntry* procura = tabela->head;
+
+  while(procura != NULL && strcmp(procura->ident, ident) != 0 && procura->categ != categ){
+    procura = procura->next;
+  }
+
+  return procura;
 }
 
 void destroy(Tabela * tabela){

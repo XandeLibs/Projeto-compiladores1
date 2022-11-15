@@ -9,11 +9,11 @@ int lines = 1, lextam;
 char c;
 
 char *keywords[] = {
-    "boolean", "else", "false", "functions", "goto", "if", "integer", "labels", "read", "return", "true", "var", "vars", "void", "while", "write"
+    "else", "functions", "goto", "if", "labels", "return", "var", "vars", "void", "while"
 };
 
 char *terminais[] = {
-    "integer", "boolean", "true", "false", "read", "write", "void", "while", "if", "return", "goto", "functions", "labels", "vars", "var", "else", "ID", "CONST",
+    "else", "functions", "goto", "if", "labels", "return", "var", "vars", "void", "while", "ID", "CONST",
     "ADDOP", "OR", "MULOP", "NOT", "SEMICOLON", "ASSIGN", "COLON", "COMMA", "LCB", "RCB", "LB", "RB", "LP", "RP", "RELOP"
 };
 
@@ -21,11 +21,11 @@ char checaKeyword(char *c){
 
     int lim_esq, lim_dir, meio, x;
 
-    lim_esq=0;                                  //começo da lista de keyword
-    lim_dir=nKeywords-1;                        //final da lista de keyword
+    lim_esq = 0;                                  //começo da lista de keyword
+    lim_dir = nKeywords-1;                        //final da lista de keyword
     while(lim_esq <= lim_dir){                  //passa por toda a lista
         meio = (lim_esq + lim_dir)/2;           //busca binaria
-        if((x=strcmp(c,keywords[meio]))>0){     //compara o lexema recebido como parametro com uma palavra reservada
+        if((x = strcmp(c,keywords[meio])) > 0){     //compara o lexema recebido como parametro com uma palavra reservada
             lim_esq = meio+1;
         }
         else if(x<0){

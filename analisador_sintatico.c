@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "analisador_lexico.h"
 #include "analisador_sintatico.h"
-#include "tabeladesimbolos.h"
 
 int lookahead;
 FILE *fin;
@@ -11,10 +10,10 @@ bool correto = true;
 /* Exige que o próximo terminal seja t e avança o ponteiro da fita de entrada (i.e., pega o próximo terminal) */
 void match(int t)
 {
-    //printf("Linha:%d: Encontrou %s com valor %d\n", lines, lexema, t);
+    //printf("Linha:%d: Encontrou %s com valor %d, procura %d\n", lines, lexema, lookahead, t);
 
     if(lookahead == ERRO_LEXICO){
-        printf("Erro lexico, %s nao faz parte da linguagem\n", lexema);
+        printf("Erro lexico, \"%s\" na linha %d nao faz parte da linguagem\n", lexema, lines);
         exit(-1);
     }
     else if(lookahead == t){
@@ -122,7 +121,7 @@ void body(){
 // body_ -> statement body_
 //        | epsilon
 void body_(){
-    if(lookahead == ID || lookahead == READ || lookahead == WRITE || lookahead == INTEGER || lookahead == BOOLEAN || lookahead == GOTO || lookahead == RETURN || lookahead == IF || lookahead == WHILE || lookahead == SEMICOLON || lookahead == LCB){
+    if(lookahead == ID || lookahead == GOTO || lookahead == RETURN || lookahead == IF || lookahead == WHILE || lookahead == SEMICOLON || lookahead == LCB){
         statement();
         body_();
     }
@@ -130,15 +129,7 @@ void body_(){
 
 //type -> ID
 void type(){
-    if(lookahead == INTEGER){
-        match(INTEGER);
-    }
-    else if(lookahead == BOOLEAN){
-        match(BOOLEAN);
-    }
-    else{
-        match(ID);
-    }
+    match(ID);
 }
 
 // formal_parameters -> LP formal_parameter formal_parameters_ RP
@@ -189,14 +180,6 @@ void statement(){
         match(ID);
         statement_();
     }
-    else if(lookahead == READ){
-        match(READ);
-        statement_();
-    }
-    else if(lookahead == WRITE){
-        match(WRITE);
-        statement_();
-    }
     else{
         unlabeled_statement();
     }
@@ -206,6 +189,7 @@ void statement(){
 //             | unlabeled_statement_
 void statement_(){
     if(lookahead == COLON){
+        match(COLON);
         unlabeled_statement();
     }
     else{
@@ -224,19 +208,11 @@ void unlabeled_statement(){
         match(ID);
         unlabeled_statement_();
     }
-    else if(lookahead == READ){
-        match(READ);
-        unlabeled_statement_();
-    }
-    else if(lookahead == WRITE){
-        match(WRITE);
-        unlabeled_statement_();
-    }
     else if(lookahead == GOTO){
-        match(GOTO);
+        _goto();
     }
     else if(lookahead == RETURN){
-        match(RETURN);
+        _return();
     }
     else if(lookahead == IF){
         conditional();
@@ -305,14 +281,14 @@ void compound_(){
     }
 }
 
-// conditional -> IF LP expression RP compound compound_
+// conditional -> IF LP expression RP compound conditional_
 void conditional(){
     match(IF);
     match(LP);
     expression();
     match(RP);
     compound();
-    compound_();
+    conditional_();
 }
 
 // conditional_ -> ELSE compound
@@ -396,14 +372,6 @@ void factor(){
         match(ID);
         factor_();
     }
-    else if(lookahead == READ){
-        match(READ);
-        factor_();
-    }
-    else if(lookahead == WRITE){
-        match(WRITE);
-        factor_;
-    }
     else if(lookahead == CONST){
         match(CONST);
     }
@@ -470,20 +438,30 @@ void expression_list_(){
 
 char *parser()
 {
-   lookahead = lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
-   program(); // chama a variável inicial da gramática.
-   if(lookahead==FIM_ARQ){
-    if(correto)
-      return("Programa sintaticamente correto!");
-   }
-   else
-      return("Fim de arquivo esperado");
+    Tabela * simbolos;
+    simbolos = maketabela();
+    TypeDescrPtr type_boolean;
+    //adiciona funções, tipos e constantes pré definidas da linguagem
+    addFunction(S_FUNCTION, "read", -1, simbolos, 0, NULL, createSymbEntry(S_PARAMETER, "r1", 0));
+    addFunction(S_FUNCTION, "write", -1, simbolos, 0, NULL, createSymbEntry(S_PARAMETER, "w1", 0));
+    addType(S_TYPE, "integer", 0, simbolos, 0, 4);
+    type_boolean = addType(S_TYPE, "boolean", 0, simbolos, 0, 1);
+    addConstant(S_CONST, "false", -1, simbolos, 0, type_boolean);
+    addConstant(S_CONST, "true", -1, simbolos, 1, type_boolean);
+
+    lookahead = lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
+    program(); // chama a variável inicial da gramática.
+
+    if(lookahead==FIM_ARQ){
+        if(correto)
+        return("Programa sintaticamente correto!");
+    }
+    else
+        return("Fim de arquivo esperado");
 }
 
 int main(int argc, char**argv)
 {
-    Tabela *Symb;
-    Symb = maketabela();
 
     if(argc<2){
         printf("\nUso: analisador <nome do arquivo>\n");

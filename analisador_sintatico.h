@@ -1,5 +1,6 @@
 void match(int t);
 char *parser();
+extern Tabela* simbolos;
 
 void program();
 void function();
