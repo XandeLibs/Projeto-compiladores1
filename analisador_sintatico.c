@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "analisador_lexico.h"
 #include "analisador_sintatico.h"
 
-int lookahead;
+int lookahead; 
+int id_list_size = 0, label_count = 0, level = 1;
 FILE *fin;
 bool correto = true;
+char id_list[15][100];
+TypeDescrPtr id_type;
+SymbEntry * symb;
 
 /* Exige que o próximo terminal seja t e avança o ponteiro da fita de entrada (i.e., pega o próximo terminal) */
 void match(int t)
@@ -70,6 +75,12 @@ void block(){
 void labels(){
     match(LABELS);
     identifier_list();
+
+    //adiciona os labels identificados durante a declaração na tabela de simbolos
+    for(int i = 0; i<id_list_size; i++){
+        addLabel(id_list[i], level, simbolos, sprintf("L%d", label_count++), true);
+    }
+
     match(SEMICOLON);
 }
 
@@ -77,8 +88,13 @@ void labels(){
 void variables(){
     match(VARS);
     identifier_list();
+
     match(COLON);
     type();
+
+    for(int i = 0; i<id_list_size; i++){
+        addVariable(id_list[i], level, simbolos, 0, id_type);
+    }
     match(SEMICOLON);
     variables_();
 }
@@ -98,14 +114,21 @@ void variables_(){
 // functions -> FUNCTIONS function functions_
 void functions(){
     match(FUNCTIONS);
+    if(level == 0){
+        addLabel("Main", level, simbolos, sprintf("L%d", label_count++), true);
+    }
+    level++;
+    addLabel("Function", level, simbolos, sprintf("L%d", label_count++), true);
     function();
     functions_();
+    level--;
 }
 
 // functions_ -> function functions_
 //             | epsilon
 void functions_(){
     if(lookahead == ID || lookahead == VOID){
+        addLabel("Function", level, simbolos, sprintf("L%d", label_count++), true);
         function();
         functions_();
     }
@@ -129,6 +152,11 @@ void body_(){
 
 //type -> ID
 void type(){
+    symb = search(S_TYPE, lexema, simbolos);
+    if(id_type != NULL){
+        id_type = symb->descr.t.type;
+    }
+
     match(ID);
 }
 
@@ -283,6 +311,7 @@ void compound_(){
 
 // conditional -> IF LP expression RP compound conditional_
 void conditional(){
+    addLabel("If", level, simbolos, sprintf("L%d", label_count++), true);
     match(IF);
     match(LP);
     expression();
@@ -295,6 +324,7 @@ void conditional(){
 //               | epsilon
 void conditional_(){
     if(lookahead == ELSE){
+        addLabel("Else", level, simbolos, sprintf("L%d", label_count++), true);
         match(ELSE);
         compound();
     }
@@ -302,6 +332,8 @@ void conditional_(){
 
 // repetitive -> WHILE LP expression RP compound
 void repetitive(){
+    addLabel("While condition", level, simbolos, sprintf("L%d", label_count++), true);
+    addLabel("While exit", level, simbolos, sprintf("L%d", label_count++), true);
     match(WHILE);
     match(LP);
     expression();
@@ -403,6 +435,8 @@ void function_call(){
 
 // identifier_list -> ID identifier_list_
 void identifier_list(){
+    id_list_size++;
+    strcpy(id_list[0], lexema);
     match(ID);
     identifier_list_();
 }
@@ -412,6 +446,7 @@ void identifier_list(){
 void identifier_list_(){
     if(lookahead == COMMA){
         match(COMMA);
+        strcpy(id_list[id_list_size++], lexema);
         match(ID);
         identifier_list_();
     }
