@@ -23,6 +23,7 @@ SymbEntry* add(SymbCateg categ, char *ident, int data, Tabela * tabela);
 void display(Tabela * Tabela);
 SymbEntry* search(SymbCateg categ, char *ident, Tabela * tabela);
 TypeDescrPtr getType(SymbEntry* symb);
+
 void destroy(Tabela * Tabela);
 
 #endif

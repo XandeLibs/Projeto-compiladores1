@@ -36,6 +36,7 @@ typedef struct _Type {
 } Type;
 
 typedef struct _symbEntry {
+
   SymbCateg categ;
   char *ident;
   int level;
@@ -59,6 +60,7 @@ typedef struct _TypeDescr {
   TypeConstr constr;
   int size;
 }*TypeDescrPtr, TypeDescr;
+
 
 SymbEntry * createSymbEntry(SymbCateg categ, char *ident, int level){
   SymbEntry * newSymbEntry = malloc(sizeof(SymbEntry));
@@ -146,6 +148,7 @@ SymbEntry* add(SymbCateg categ, char *ident, int level, Tabela * tabela){
   if(tabela->head == NULL){
     tabela->head = createSymbEntry(categ, ident, level);
     return tabela->head;
+
   }
   else {
     current = tabela->head; 
@@ -172,6 +175,7 @@ SymbEntry* search(SymbCateg categ, char *ident, Tabela * tabela){
 TypeDescrPtr getType(SymbEntry* symb){
   return symb->descr.t.type;
 }
+
 
 void destroy(Tabela * tabela){
   SymbEntry * current = tabela->head;
