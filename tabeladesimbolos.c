@@ -4,6 +4,62 @@
 #include <string.h>
 #include "tabeladesimbolos.h"
 
+typedef struct _Constant {
+  int value;
+  TypeDescrPtr type;
+} Constant;
+
+typedef struct _Variable {
+  int displ;
+  TypeDescrPtr type;
+} Variable;
+
+typedef struct _Formal_Pam {
+  int displ;
+  TypeDescrPtr type;
+  Passage pass;
+} Formal_Pam;
+
+typedef struct _Function {
+  int displ;
+  TypeDescrPtr result;
+  SymbEntry *params;
+} Function;
+
+typedef struct _Label {
+  char *label;
+  bool defined;
+} Label;
+
+typedef struct _Type {
+  TypeDescrPtr type;
+} Type;
+
+typedef struct _symbEntry {
+  SymbCateg categ;
+  char *ident;
+  int level;
+  struct _symbEntry * next;
+
+  union {
+    Constant c;
+    Variable v;
+    Formal_Pam fm;
+    Function f;
+    Label l;
+    Type t;
+  } descr;
+}SymbEntry;
+
+typedef struct tabela {
+  SymbEntry * head; 
+}Tabela;
+
+typedef struct _TypeDescr {
+  TypeConstr constr;
+  int size;
+}*TypeDescrPtr, TypeDescr;
+
 SymbEntry * createSymbEntry(SymbCateg categ, char *ident, int level){
   SymbEntry * newSymbEntry = malloc(sizeof(SymbEntry));
   if (!newSymbEntry) {
@@ -110,6 +166,11 @@ SymbEntry* search(SymbCateg categ, char *ident, Tabela * tabela){
   }
 
   return procura;
+}
+
+//retorna o descritor de tipo da entry symb
+TypeDescrPtr getType(SymbEntry* symb){
+  return symb->descr.t.type;
 }
 
 void destroy(Tabela * tabela){

@@ -153,8 +153,8 @@ void body_(){
 //type -> ID
 void type(){
     symb = search(S_TYPE, lexema, simbolos);
-    if(id_type != NULL){
-        id_type = symb->descr.t.type;
+    if(symb != NULL){
+        id_type = getType(symb);
     }
 
     match(ID);

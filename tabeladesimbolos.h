@@ -2,61 +2,10 @@
 #define TABELA_HEADER
 #include <stdbool.h>
 
-typedef struct _Constant {
-  int value;
-  TypeDescrPtr type;
-} Constant;
-
-typedef struct _Variable {
-  int displ;
-  TypeDescrPtr type;
-} Variable;
-
-typedef struct _Formal_Pam {
-  int displ;
-  TypeDescrPtr type;
-  Passage pass;
-} Formal_Pam;
-
-typedef struct _Function {
-  int displ;
-  TypeDescrPtr result;
-  SymbEntry *params;
-} Function;
-
-typedef struct _Label {
-  char *label;
-  bool defined;
-} Label;
-
-typedef struct _Type {
-  TypeDescrPtr type;
-} Type;
-
-typedef struct _symbEntry {
-  SymbCateg categ;
-  char *ident;
-  int level;
-  struct _symbEntry * next;
-
-  union {
-    Constant c;
-    Variable v;
-    Formal_Pam fm;
-    Function f;
-    Label l;
-    Type t;
-  } descr;
-}SymbEntry;
-
-typedef struct tabela {
-  SymbEntry * head; 
-}Tabela;
-
-typedef struct _TypeDescr {
-  TypeConstr constr;
-  int size;
-}*TypeDescrPtr, TypeDescr;
+typedef struct _symbEntry SymbEntry;
+typedef struct tabela Tabela;
+typedef struct _TypeDescr *TypeDescrPtr;
+typedef struct _TypeDescr TypeDescr;
 
 typedef enum {S_CONST = 1, S_VARIABLE, S_PARAMETER, S_FUNCTION, S_LABEL, S_TYPE} SymbCateg;
 typedef enum {P_VALUE = 1, P_VARIABLE} Passage;
@@ -73,6 +22,7 @@ TypeDescrPtr addType(char *ident, int level, Tabela * tabela, TypeConstr predef_
 SymbEntry* add(SymbCateg categ, char *ident, int data, Tabela * tabela);
 void display(Tabela * Tabela);
 SymbEntry* search(SymbCateg categ, char *ident, Tabela * tabela);
+TypeDescrPtr getType(SymbEntry* symb);
 void destroy(Tabela * Tabela);
 
 #endif
