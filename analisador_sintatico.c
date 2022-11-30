@@ -285,13 +285,17 @@ void _goto(){
     match(SEMICOLON);
 }
 
-// _return -> RETURN SEMICOLON
-//          | RETURN expression SEMICOLON
+// _return -> RETURN _return_
 void _return(){
     match(RETURN);
-    if(lookahead == SEMICOLON){
+    _return_();
+}
+
+// _return_ -> SEMICOLON
+//           | expression SEMICOLON
+void _return_(){
+    if(lookahead == SEMICOLON)
         match(SEMICOLON);
-    }
     else{
         expression();
         match(SEMICOLON);
@@ -351,17 +355,20 @@ void repetitive(){
     compound();
 }
 
-// expression -> simple_expression
-//             | simple_expression RELOP simple_expression
+// expression -> simple_expression expression_
 void expression(){
     simple_expression();
+    expression_();
+}
+
+// expression_ -> RELOP simple_expression
+//              | epsilon
+void expression_(){
     if(lookahead == RELOP){
         match(RELOP);
         simple_expression();
     }
 }
-
-
 
 // simple_expression -> ADDOP term simple_expression_
 //                    | term simple_expression_
