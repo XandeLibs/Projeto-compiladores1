@@ -11,6 +11,8 @@ bool correto = true;
 char id_list[15][100];
 TypeDescrPtr id_type;
 SymbEntry * symb;
+char printbuffer[100];
+Tabela* simbolos;
 
 /* Exige que o próximo terminal seja t e avança o ponteiro da fita de entrada (i.e., pega o próximo terminal) */
 void match(int t)
@@ -78,7 +80,8 @@ void labels(){
 
     //adiciona os labels identificados durante a declaração na tabela de simbolos
     for(int i = 0; i<id_list_size; i++){
-        addLabel(id_list[i], level, simbolos, sprintf("L%d", label_count++), true);
+        sprintf(printbuffer, "L%d", label_count++);
+        addLabel(id_list[i], level, simbolos, printbuffer, true);
     }
 
     match(SEMICOLON);
@@ -115,10 +118,12 @@ void variables_(){
 void functions(){
     match(FUNCTIONS);
     if(level == 0){
-        addLabel("Main", level, simbolos, sprintf("L%d", label_count++), true);
+        sprintf(printbuffer, "L%d", label_count++);
+        addLabel("Main", level, simbolos, printbuffer, true);
     }
     level++;
-    addLabel("Function", level, simbolos, sprintf("L%d", label_count++), true);
+    sprintf(printbuffer, "L%d", label_count++);
+    addLabel("Function", level, simbolos, printbuffer, true);
     function();
     functions_();
     level--;
@@ -128,7 +133,8 @@ void functions(){
 //             | epsilon
 void functions_(){
     if(lookahead == ID || lookahead == VOID){
-        addLabel("Function", level, simbolos, sprintf("L%d", label_count++), true);
+        sprintf(printbuffer, "L%d", label_count++);
+        addLabel("Function", level, simbolos, printbuffer, true);
         function();
         functions_();
     }
@@ -311,7 +317,8 @@ void compound_(){
 
 // conditional -> IF LP expression RP compound conditional_
 void conditional(){
-    addLabel("If", level, simbolos, sprintf("L%d", label_count++), true);
+    sprintf(printbuffer, "L%d", label_count++);
+    addLabel("If", level, simbolos, printbuffer, true);
     match(IF);
     match(LP);
     expression();
@@ -324,7 +331,8 @@ void conditional(){
 //               | epsilon
 void conditional_(){
     if(lookahead == ELSE){
-        addLabel("Else", level, simbolos, sprintf("L%d", label_count++), true);
+        sprintf(printbuffer, "L%d", label_count++);
+        addLabel("Else", level, simbolos, printbuffer, true);
         match(ELSE);
         compound();
     }
@@ -332,8 +340,10 @@ void conditional_(){
 
 // repetitive -> WHILE LP expression RP compound
 void repetitive(){
-    addLabel("While condition", level, simbolos, sprintf("L%d", label_count++), true);
-    addLabel("While exit", level, simbolos, sprintf("L%d", label_count++), true);
+    sprintf(printbuffer, "L%d", label_count++);
+    addLabel("While condition", level, simbolos, printbuffer, true);
+    sprintf(printbuffer, "L%d", label_count++);
+    addLabel("While exit", level, simbolos, printbuffer, true);
     match(WHILE);
     match(LP);
     expression();
@@ -473,16 +483,15 @@ void expression_list_(){
 
 char *parser()
 {
-    Tabela * simbolos;
     simbolos = maketabela();
     TypeDescrPtr type_boolean;
     //adiciona funções, tipos e constantes pré definidas da linguagem
-    addFunction(S_FUNCTION, "read", -1, simbolos, 0, NULL, createSymbEntry(S_PARAMETER, "r1", 0));
-    addFunction(S_FUNCTION, "write", -1, simbolos, 0, NULL, createSymbEntry(S_PARAMETER, "w1", 0));
-    addType(S_TYPE, "integer", 0, simbolos, 0, 4);
-    type_boolean = addType(S_TYPE, "boolean", 0, simbolos, 0, 1);
-    addConstant(S_CONST, "false", -1, simbolos, 0, type_boolean);
-    addConstant(S_CONST, "true", -1, simbolos, 1, type_boolean);
+    addFunction("read", -1, simbolos, 0, NULL, createSymbEntry(S_PARAMETER, "r1", 0));
+    addFunction("write", -1, simbolos, 0, NULL, createSymbEntry(S_PARAMETER, "w1", 0));
+    addType("integer", 0, simbolos, 0, 4);
+    type_boolean = addType("boolean", 0, simbolos, 0, 1);
+    addConstant("false", -1, simbolos, 0, type_boolean);
+    addConstant("true", -1, simbolos, 1, type_boolean);
 
     lookahead = lex(); // inicializa lookahead com o primeiro terminal da fita de entrada (arquivo)
     program(); // chama a variável inicial da gramática.
